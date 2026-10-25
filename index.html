@@ -2,49 +2,31 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>なっちゃんのあそびルーレット</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="theme-color" content="#ff8fa3">
 </head>
 <body>
+<canvas id="confetti" aria-hidden="true"></canvas>
 <main>
-  <h1>なっちゃんのあそびルーレット</h1>
+  <h1><span>✨</span>なっちゃんの<br>あそびルーレット<span>✨</span></h1>
 
   <section class="stage">
-    <div class="bubble" id="bubble" aria-live="polite">なっちゃん、なにしてあそぶ…？</div>
-    <svg id="chara" class="chara idle" viewBox="0 0 120 150" aria-hidden="true">
-      <g class="body">
-        <ellipse cx="60" cy="140" rx="30" ry="6" fill="#0002"/>
-        <rect x="38" y="78" width="44" height="50" rx="16" fill="#ffb347"/>
-        <g class="arm-l"><rect x="22" y="82" width="12" height="34" rx="6" fill="#ffb347"/></g>
-        <g class="arm-r"><rect x="86" y="82" width="12" height="34" rx="6" fill="#ffb347"/></g>
-        <rect x="42" y="124" width="14" height="14" rx="5" fill="#8a5a2b"/>
-        <rect x="64" y="124" width="14" height="14" rx="5" fill="#8a5a2b"/>
-        <circle cx="60" cy="52" r="34" fill="#ffd9a0"/>
-        <path d="M30 44 Q60 6 90 44 Q60 28 30 44Z" fill="#8a5a2b"/>
-        <path d="M84 24 q14 -10 12 6 q-4 8 -12 -6Z" fill="#ff6b81"/>
-        <g class="eyes">
-          <circle cx="47" cy="54" r="4" fill="#333"/>
-          <circle cx="73" cy="54" r="4" fill="#333"/>
-        </g>
-        <ellipse cx="38" cy="64" rx="6" ry="4" fill="#ff9aa2" opacity=".7"/>
-        <ellipse cx="82" cy="64" rx="6" ry="4" fill="#ff9aa2" opacity=".7"/>
-        <path class="mouth" d="M52 68 Q60 74 68 68" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round"/>
-      </g>
-    </svg>
+    <div class="bubble" id="bubble" aria-live="polite">なっちゃん、なにしてあそぶ〜？</div>
+    <img id="chara" class="chara idle" src="buhio/waving.webp" alt="" draggable="false">
   </section>
 
   <section class="wheel-wrap">
-    <div class="pointer">▼</div>
-    <canvas id="wheel" width="640" height="640" aria-label="ルーレット"></canvas>
+    <div class="pointer" aria-hidden="true"></div>
+    <canvas id="wheel" width="720" height="720" aria-label="ルーレット"></canvas>
   </section>
 
   <button id="spin" class="spin">まわす！</button>
-  <p class="result" id="result" aria-live="polite"></p>
+  <div class="result" id="result" aria-live="polite"></div>
 
   <details class="editor">
     <summary>あそびをかえる</summary>

@@ -3,3 +3,6 @@
 
 - ビルド不要の静的サイト。`index.html` を開くだけ（または `npx serve .`）
 - あそびの項目は画面下の「あそびをかえる」で追加・削除（端末内 localStorage に保存）
+
+## 素材
+ぶひお（`buhio/*.webp`、`icons/`）は `uk-support1/buhilog` と同じ素材を流用。
