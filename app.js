@@ -115,3 +115,5 @@ $("add").onsubmit = (e) => {
 $("reset").onclick = () => { items = [...DEFAULTS]; persist(); };
 
 setState("idle"); renderList(); draw();
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
