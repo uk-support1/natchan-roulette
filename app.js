@@ -1,7 +1,8 @@
-const DEFAULTS = ["マッサージ","かくれんぼ","うで立てふせ10回","ぐるぐる","ジェットコースター","ラッキーおやつ","ボールポンポン","パンチパンチ","のっかり","自てん車でおさんぽ"];
-const EMOJI = {"マッサージ":"💆","かくれんぼ":"🙈","うで立てふせ10回":"💪","ぐるぐる":"🌀","ジェットコースター":"🎢","ラッキーおやつ":"🍬","ボールポンポン":"⚽","パンチパンチ":"🥊","のっかり":"🐴","自てん車でおさんぽ":"🚲"};
-const COLORS = ["#ff7eb6","#ffc83d","#5be37d","#4fc3ff","#b983ff","#ff9b5e","#ff6b6b","#3fe0c5","#ffd1ef","#a6e22e"];
-const KEY = "natchan-roulette:items:v3";
+const DEFAULTS = ["マッサージ","かくれんぼ","うで立てふせ10回","ぐるぐる","ジェットコースター","ラッキーおやつ","ボールポンポン","パンチパンチ","のっかり","自てん車でおさんぽ","もう一回まわす","休けい"];
+const AGAIN = "もう一回まわす";
+const EMOJI = {"マッサージ":"💆","かくれんぼ":"🙈","うで立てふせ10回":"💪","ぐるぐる":"🌀","ジェットコースター":"🎢","ラッキーおやつ":"🍬","ボールポンポン":"⚽","パンチパンチ":"🥊","のっかり":"🐴","自てん車でおさんぽ":"🚲","もう一回まわす":"🔁","休けい":"☕"};
+const COLORS = ["#ff7eb6","#ffc83d","#5be37d","#4fc3ff","#b983ff","#ff9b5e","#ff6b6b","#3fe0c5","#ffd1ef","#a6e22e","#ffe08a","#9ad0ff"];
+const KEY = "natchan-roulette:items:v4";
 
 const $ = (id) => document.getElementById(id);
 const canvas = $("wheel"), ctx = canvas.getContext("2d");
@@ -23,7 +24,7 @@ function load() {
 function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} }
 const emojiOf = (t) => EMOJI[t] || "⭐";
 
-const LINES = {"うで立てふせ10回":["うで立て","ふせ10回"],"自てん車でおさんぽ":["自てん車で","おさんぽ"],"ジェットコースター":["ジェット","コースター"],"ラッキーおやつ":["ラッキー","おやつ"],"ボールポンポン":["ボール","ポンポン"],"パンチパンチ":["パンチ","パンチ"]};
+const LINES = {"うで立てふせ10回":["うで立て","ふせ10回"],"自てん車でおさんぽ":["自てん車で","おさんぽ"],"もう一回まわす":["もう一回","まわす"],"ジェットコースター":["ジェット","コースター"],"ラッキーおやつ":["ラッキー","おやつ"],"ボールポンポン":["ボール","ポンポン"],"パンチパンチ":["パンチ","パンチ"]};
 function splitLabel(t) {
   if (LINES[t]) return LINES[t];
   if (t.length <= 6) return [t];
@@ -51,12 +52,12 @@ function draw(now = 0) {
 
     ctx.save(); ctx.rotate(a0 + seg / 2);
     ctx.textBaseline = "middle"; ctx.textAlign = "center";
-    ctx.font = "44px sans-serif"; ctx.fillText(emojiOf(label), r - 52, 0);   // 絵文字は外側
-    const lines = splitLabel(label), fs = n > 10 ? 25 : 30;
+    ctx.font = (n > 10 ? 38 : 44) + "px sans-serif"; ctx.fillText(emojiOf(label), r - 48, 0);   // 絵文字は外側
+    const lines = splitLabel(label), fs = n > 10 ? 21 : 30;
     ctx.font = `900 ${fs}px "Hiragino Maru Gothic ProN","Yu Gothic",sans-serif`;
     ctx.lineJoin = "round"; ctx.lineWidth = 7; ctx.strokeStyle = "#fffffff0"; ctx.fillStyle = "#4a2a55";
-    const cx = r - 165, lh = fs * 1.15, y0 = -((lines.length - 1) * lh) / 2;
-    lines.forEach((ln, k) => { ctx.strokeText(ln, cx, y0 + k * lh, 175); ctx.fillText(ln, cx, y0 + k * lh, 175); });
+    const cx = r - (n > 10 ? 150 : 165), lh = fs * 1.15, y0 = -((lines.length - 1) * lh) / 2;
+    lines.forEach((ln, k) => { ctx.strokeText(ln, cx, y0 + k * lh, n > 10 ? 130 : 175); ctx.fillText(ln, cx, y0 + k * lh, n > 10 ? 130 : 175); });
     ctx.restore();
   });
   ctx.restore();
@@ -121,11 +122,12 @@ function fall() {
   bits.length ? requestAnimationFrame(fall) : (confettiOn = false, cx2.clearRect(0, 0, cv.width, cv.height));
 }
 
-async function spin() {
-  if (busy) return;
+async function spin(chain = 0) {
+  if (busy && chain === 0) return;
   busy = true; $("spin").disabled = true; $("result").textContent = "";
   const n = items.length, seg = (Math.PI * 2) / n, TAU = Math.PI * 2;
-  const win = Math.floor(Math.random() * n);                 // 結果は最初に公平に決める
+  let win = Math.floor(Math.random() * n);                   // 結果は最初に公平に決める
+  while (chain >= 2 && items[win] === AGAIN && n > 1) win = Math.floor(Math.random() * n);  // 連続しすぎない
   const jitter = (Math.random() - 0.5) * seg * 0.6;
   const rest = (((-(win + 0.5) * seg - jitter) % TAU) + TAU) % TAU;
   const base = angle - (((angle % TAU) + TAU) % TAU);
@@ -148,8 +150,15 @@ async function spin() {
     setState("trip"); say("わわっ…ころんだ！"); await wait(1200);
   }
 
+  if (items[win] === AGAIN) {                                // もう一回まわす → 自動でもう一度
+    setState("happy"); say("もう一回まわせる！やったね！");
+    const c = document.createElement("div"); c.className = "card";
+    c.textContent = `${emojiOf(AGAIN)} ${AGAIN} ${emojiOf(AGAIN)}`; $("result").replaceChildren(c);
+    await wait(2200);
+    return spin(chain + 1);
+  }
   setState("happy");
-  say(`${items[win]}、だって！やったね！`);
+  say(items[win] === "休けい" ? "ちょっとひとやすみしよう〜！" : `${items[win]}、だって！やったね！`);
   const card = document.createElement("div"); card.className = "card";
   card.textContent = `${emojiOf(items[win])} ${items[win]} ${emojiOf(items[win])}`;
   $("result").replaceChildren(card);
@@ -172,7 +181,7 @@ function renderList() {
 }
 function persist() { save(); renderList(); }
 
-$("spin").onclick = spin;
+$("spin").onclick = () => spin();
 $("add").onsubmit = (e) => {
   e.preventDefault();
   const v = $("newItem").value.trim();
