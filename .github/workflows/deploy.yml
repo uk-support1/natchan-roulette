@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           mkdir _site
-          cp -r index.html style.css app.js sw.js manifest.webmanifest icons buhio _site/
+          cp -r index.html style.css app.js sw.js manifest.webmanifest icons buhio ballspeed _site/
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
       - id: deployment

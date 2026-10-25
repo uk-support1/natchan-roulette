@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ボールスピードそくてい</title>
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#1f6feb">
+</head>
+<body>
+<main>
+  <h1>⚾ ボールスピードそくてい</h1>
+  <p class="lead">動画のコマを1つずつ見て、ボールをタップして速さを出します。動画は端末の中だけで処理され、外には送られません。</p>
+
+  <section class="card">
+    <h2>1. 動画とせっていをえらぶ</h2>
+    <label class="btn primary">動画をえらぶ<input id="file" type="file" accept="video/*" hidden></label>
+    <div class="row">
+      <label>撮影したコマ数
+        <select id="fps">
+          <option value="240" selected>240コマ/秒（スロー）</option>
+          <option value="120">120コマ/秒（スロー）</option>
+          <option value="60">60コマ/秒</option>
+          <option value="30">30コマ/秒</option>
+        </select>
+      </label>
+      <label>ボール
+        <select id="ball">
+          <option value="6.7" selected>テニス (6.7cm)</option>
+          <option value="7.4">野球 (7.4cm)</option>
+          <option value="9.7">ソフトボール (9.7cm)</option>
+          <option value="4.0">ピンポン (4.0cm)</option>
+          <option value="4.27">ゴルフ (4.27cm)</option>
+          <option value="22">サッカー (22cm)</option>
+          <option value="custom">ほか（直径を入力）</option>
+        </select>
+      </label>
+      <label id="customWrap" hidden>直径(cm)<input id="custom" type="number" step="0.1" min="1" value="6.7"></label>
+    </div>
+    <p id="status" class="status" aria-live="polite">まだ動画がありません。</p>
+    <details>
+      <summary>うまくいかないとき・くわしい設定</summary>
+      <label>動画ファイルのコマ間隔(ミリ秒)
+        <input id="ms" type="number" step="0.01" min="0.1">
+      </label>
+      <p class="hint">ふつうは自動で測ります。コマ間隔がバラバラ（スローと通常が混ざっている）と警告が出たら、「写真」アプリで動画を編集して、スローの範囲を動画全体に広げてから、もう一度えらんでください。</p>
+    </details>
+  </section>
+
+  <section class="card" id="work" hidden>
+    <h2>2. タップして測る</h2>
+    <div class="seg" role="tablist">
+      <button id="modeSize" class="on" type="button">① ボールの大きさ</button>
+      <button id="modeTrack" type="button">② ボールの位置</button>
+    </div>
+    <p id="guide" class="guide"></p>
+
+    <div class="stage">
+      <video id="video" muted playsinline preload="auto"></video>
+      <canvas id="ov"></canvas>
+    </div>
+
+    <div class="frame" id="frameLabel"></div>
+    <div class="nav">
+      <button id="bb" type="button">⏪</button>
+      <button id="b1" type="button">◀ 1コマ</button>
+      <button id="f1" type="button">1コマ ▶</button>
+      <button id="ff" type="button">⏩</button>
+    </div>
+    <label class="stride">⏪⏩で進むコマ数 <input id="stride" type="number" min="1" max="60" value="4"></label>
+
+    <div class="row">
+      <button id="undo" class="btn" type="button">ひとつ消す</button>
+      <button id="reset" class="btn" type="button">ぜんぶやりなおし</button>
+    </div>
+  </section>
+
+  <section class="card result" id="resultCard" hidden>
+    <h2>3. けっか</h2>
+    <div id="result"></div>
+  </section>
+
+  <details class="card tips">
+    <summary>きれいに測るコツ</summary>
+    <ul>
+      <li>スマホを三脚や台に固定し、ボールの通り道と<b>平行（真横）</b>に置く。</li>
+      <li><b>明るい部屋</b>で、無地の背景で。暗いとボールがぶれて見えにくくなります。</li>
+      <li>iPhoneの<b>スローモーション（240コマ/秒）</b>で撮ると正確です。</li>
+      <li>ボールの大きさから長さを決めるので、ボールは通り道と同じ奥行きを通るようにします。</li>
+      <li>これは練習の目安です。スピードガンのような正確さはありません。</li>
+    </ul>
+  </details>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

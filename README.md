@@ -6,3 +6,6 @@
 
 ## 素材
 ぶひお（`buhio/*.webp`、`icons/`）は `uk-support1/buhilog` と同じ素材を流用。
+
+## ballspeed/（ボールスピードそくてい）
+動画のコマをタップしてボールの速さを出す実験アプリ。`/ballspeed/` で開く。動画は端末内だけで処理。
