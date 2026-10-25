@@ -1,7 +1,7 @@
-const DEFAULTS = ["マッサージ","かくれんぼ","腕立て伏せ10回","ぐるぐる","ジェットコースター","ラッキーおやつ","ボールポンポン","パンチパンチ"];
-const EMOJI = {"マッサージ":"💆","かくれんぼ":"🙈","腕立て伏せ10回":"💪","ぐるぐる":"🌀","ジェットコースター":"🎢","ラッキーおやつ":"🍬","ボールポンポン":"⚽","パンチパンチ":"🥊"};
-const COLORS = ["#ff7eb6","#ffc83d","#5be37d","#4fc3ff","#b983ff","#ff9b5e","#ff6b6b","#3fe0c5"];
-const KEY = "natchan-roulette:items:v2";
+const DEFAULTS = ["マッサージ","かくれんぼ","うで立てふせ10回","ぐるぐる","ジェットコースター","ラッキーおやつ","ボールポンポン","パンチパンチ","のっかり","自てん車でおさんぽ"];
+const EMOJI = {"マッサージ":"💆","かくれんぼ":"🙈","うで立てふせ10回":"💪","ぐるぐる":"🌀","ジェットコースター":"🎢","ラッキーおやつ":"🍬","ボールポンポン":"⚽","パンチパンチ":"🥊","のっかり":"🐴","自てん車でおさんぽ":"🚲"};
+const COLORS = ["#ff7eb6","#ffc83d","#5be37d","#4fc3ff","#b983ff","#ff9b5e","#ff6b6b","#3fe0c5","#ffd1ef","#a6e22e"];
+const KEY = "natchan-roulette:items:v3";
 
 const $ = (id) => document.getElementById(id);
 const canvas = $("wheel"), ctx = canvas.getContext("2d");
@@ -23,7 +23,7 @@ function load() {
 function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {} }
 const emojiOf = (t) => EMOJI[t] || "⭐";
 
-const LINES = {"腕立て伏せ10回":["腕立て伏せ","10回"],"ジェットコースター":["ジェット","コースター"],"ラッキーおやつ":["ラッキー","おやつ"],"ボールポンポン":["ボール","ポンポン"],"パンチパンチ":["パンチ","パンチ"]};
+const LINES = {"うで立てふせ10回":["うで立て","ふせ10回"],"自てん車でおさんぽ":["自てん車で","おさんぽ"],"ジェットコースター":["ジェット","コースター"],"ラッキーおやつ":["ラッキー","おやつ"],"ボールポンポン":["ボール","ポンポン"],"パンチパンチ":["パンチ","パンチ"]};
 function splitLabel(t) {
   if (LINES[t]) return LINES[t];
   if (t.length <= 6) return [t];
