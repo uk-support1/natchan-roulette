@@ -32,10 +32,8 @@
           <option value="4.0">ピンポン (4.0cm)</option>
           <option value="4.27">ゴルフ (4.27cm)</option>
           <option value="22">サッカー (22cm)</option>
-          <option value="custom">ほか（直径を入力）</option>
         </select>
       </label>
-      <label id="customWrap" hidden>直径(cm)<input id="custom" type="number" step="0.1" min="1" value="6.7"></label>
     </div>
     <p id="status" class="status" aria-live="polite">まだ動画がありません。</p>
     <details>
@@ -49,15 +47,26 @@
 
   <section class="card" id="work" hidden>
     <h2>2. タップして測る</h2>
+    <div class="row">
+      <label>① でタップする2点の実際の長さ(cm)
+        <input id="refCm" type="number" step="0.1" min="0.5" value="6.7">
+      </label>
+      <label>画面の拡大
+        <select id="zoom"><option value="1" selected>1倍</option><option value="2">2倍</option><option value="3">3倍</option><option value="4">4倍</option></select>
+      </label>
+    </div>
+    <p class="hint">長さは、ボールの直径（上で選ぶと自動で入ります）か、<b>ボールの通り道と同じ奥行きにある</b>、メジャーで測れるもの（窓の幅など）を入れます。ボールが小さく写るときは、拡大してタップすると正確になります。</p>
     <div class="seg" role="tablist">
       <button id="modeSize" class="on" type="button">① ボールの大きさ</button>
       <button id="modeTrack" type="button">② ボールの位置</button>
     </div>
     <p id="guide" class="guide"></p>
 
-    <div class="stage">
-      <video id="video" muted playsinline preload="auto"></video>
-      <canvas id="ov"></canvas>
+    <div class="scroller">
+      <div class="stage" id="stage">
+        <video id="video" muted playsinline preload="auto"></video>
+        <canvas id="ov"></canvas>
+      </div>
     </div>
 
     <div class="frame" id="frameLabel"></div>

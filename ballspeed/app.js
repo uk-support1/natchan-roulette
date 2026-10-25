@@ -3,16 +3,14 @@ const video = $("video"), ov = $("ov"), g = ov.getContext("2d");
 const S = { dt: 0.0333, n: 0, k: 0, mode: "size", sizeTaps: [], pts: [], ready: false };
 
 const GUIDE = {
-  size: "ボールがぶれていないコマ（投げる前など）で、【左のはし】→【右のはし】の順にタップ（直径を測ります）。ぶれて横に伸びて見えるときは【上のはし】→【下のはし】。",
+  size: "長さの基準をタップします。ボールなら、ぶれていないコマ（投げる前など）で【左のはし】→【右のはし】の順に。ぶれて伸びて見えるときは【上のはし】→【下のはし】。小さいときは「画面の拡大」を使ってください。",
   track: "ボールの【中心】をタップ（ぶれて伸びているときは、伸びた全体の真ん中）。自動で数コマ先に進むので、ボールが画面から出るまで続けます（2か所以上、できれば5〜8か所）。",
 };
 
-function ballDiameterM() {
-  const v = $("ball").value;
-  return (v === "custom" ? parseFloat($("custom").value) : parseFloat(v)) / 100;
-}
+const refM = () => parseFloat($("refCm").value) / 100;     // ①でタップする2点の実際の長さ（m）
+const zoomN = () => parseFloat($("zoom").value) || 1;
 const captureFps = () => parseFloat($("fps").value);
-const unit = () => Math.max(1, ov.width / 360);   // 画面の大きさにあわせた目印の太さ
+const unit = () => Math.max(0.5, ov.width / 360 / zoomN());   // 画面上で同じ太さに見える目印
 
 function setStatus(t, warn = false) { $("status").textContent = t; $("status").classList.toggle("warn", warn); }
 
@@ -57,7 +55,11 @@ async function loadFile(file) {
   const r = await detectInterval();
   if (r) {
     S.dt = r.dt;
-    setStatus(`コマ間隔: ${(r.dt * 1000).toFixed(2)}ミリ秒（動画ファイル内）。` + (r.odd > 0.2 ? "コマ間隔がバラバラです。スローと通常が混ざっている可能性があります（下の「うまくいかないとき」を見てください）。" : ""), r.odd > 0.2);
+    const guess = [240, 120, 60, 30].find((f) => Math.abs(r.dt * f - 1) < 0.12);
+    if (guess) $("fps").value = String(guess);
+    setStatus(`コマ間隔: ${(r.dt * 1000).toFixed(2)}ミリ秒（動画ファイル内）。` +
+      (guess ? `→ ${guess}コマ/秒の動画と判断して、撮影コマ数を自動で合わせました。` + (guess <= 60 ? "スローモーションで撮ったのにこの表示なら、上の「撮影したコマ数」を選び直してください。" : "") : "撮影したコマ数は、上で手動で選んでください。") +
+      (r.odd > 0.2 ? "コマ間隔がバラバラです。スローと通常が混ざっている可能性があります（下の「うまくいかないとき」を見てください）。" : ""), r.odd > 0.2 || (guess && guess <= 60));
   } else {
     S.dt = 1 / 30;
     setStatus("コマ間隔を自動で測れませんでした。1/30秒と仮定しています。下の「くわしい設定」で直してください。", true);
@@ -101,7 +103,7 @@ function setMode(m) {
   $("guide").textContent = GUIDE[m];
 }
 
-ov.addEventListener("pointerdown", (e) => {
+ov.addEventListener("click", (e) => {
   if (!S.ready) return;
   e.preventDefault();
   const r = ov.getBoundingClientRect();
@@ -118,13 +120,20 @@ ov.addEventListener("pointerdown", (e) => {
   }
 });
 
+function warns(kmh, rel, d) {
+  const w = [];
+  if (kmh > 160) w.push("速すぎます。「撮影したコマ数」が動画と合っているか（普通の動画は30や60コマ/秒）と、①の長さの基準を確認してください。");
+  if (rel > 0.3) w.push(`基準にした2点が画面で小さく（約${d.toFixed(0)}ピクセル）、タップのずれが大きく響いています。「画面の拡大」で拡大して①をやり直すか、ボールがもっと大きく写る動画で測ってください。`);
+  return w.map((t) => `<div class="warnbox">⚠️ ${t}</div>`).join("");
+}
+
 // 位置を時間の直線にあてはめて、速さと誤差の目安を出す
 function compute() {
   const card = $("resultCard");
   const d = S.sizeTaps.length === 2 ? Math.hypot(S.sizeTaps[0].x - S.sizeTaps[1].x, S.sizeTaps[0].y - S.sizeTaps[1].y) : 0;
   const pts = S.pts;
   const need = [];
-  if (!d) need.push("① ボールの大きさ（左右のはし）をタップ");
+  if (!d) need.push("① 長さの基準（ボールの両はしなど）をタップ");
   if (pts.length < 2) need.push("② ボールの位置を2か所以上タップ");
   if (need.length) { card.hidden = pts.length === 0 && !d; $("result").innerHTML = `<p class="note">あと必要なこと:<br>${need.join("<br>")}</p>`; return; }
   card.hidden = false;
@@ -141,10 +150,11 @@ function compute() {
     return { v, rms: sig };
   };
   const fx = fit("x"), fy = fit("y");
-  const tapErr = 3 * (ov.width / 1280 || 1);                   // 指でのタップのずれ（ピクセル）
+  const shownW = ov.getBoundingClientRect().width || 360;
+  const tapErr = 2.5 * (ov.width / shownW);                    // 指のタップのずれ（動画のピクセル換算。画面で約2.5px）
   const sx = Math.max(fx.rms, tapErr), sy = Math.max(fy.rms, tapErr);
   const vpx = Math.hypot(fx.v, fy.v);
-  const m = ballDiameterM() / d;                                // メートル / ピクセル
+  const m = refM() / d;                                // メートル / ピクセル
   const ms = vpx * m, kmh = ms * 3.6;
   const dv = Math.sqrt((fx.v * sx / Math.sqrt(sxx)) ** 2 + (fy.v * sy / Math.sqrt(sxx)) ** 2) / (vpx || 1);
   const rel = Math.sqrt((dv / (vpx || 1)) ** 2 + ((tapErr * 1.5) / d) ** 2);
@@ -153,14 +163,17 @@ function compute() {
     `<div class="big">${kmh.toFixed(1)} <small>km/h</small></div>` +
     `<dl><dt>秒速</dt><dd>${ms.toFixed(2)} m/秒</dd>` +
     `<dt>ばらつきの目安</dt><dd>±${Math.max(1, rel * 100).toFixed(0)}%（約 ${(kmh * (1 - rel)).toFixed(0)}〜${(kmh * (1 + rel)).toFixed(0)} km/h）</dd>` +
+    `<dt>撮影コマ数</dt><dd>${fps}コマ/秒</dd>` +
     `<dt>使った点</dt><dd>${n}か所（${span}コマぶん = ${(span / fps * 1000).toFixed(1)}ミリ秒）</dd>` +
     `<dt>画面の縮尺</dt><dd>1ピクセル = ${(m * 1000).toFixed(2)}mm</dd></dl>` +
+    warns(kmh, rel, d) +
     `<p class="note">ボールが通り道と同じ奥行きを真横に動いた前提の目安です。重力で曲がる分や、タップのずれは含まれません。</p>`;
 }
 
 $("file").addEventListener("change", (e) => e.target.files[0] && loadFile(e.target.files[0]));
-$("ball").addEventListener("change", () => { $("customWrap").hidden = $("ball").value !== "custom"; compute(); });
-$("custom").addEventListener("input", compute);
+$("ball").addEventListener("change", () => { $("refCm").value = $("ball").value; compute(); });
+$("refCm").addEventListener("input", compute);
+$("zoom").addEventListener("change", () => { $("stage").style.width = zoomN() * 100 + "%"; draw(); });
 $("fps").addEventListener("change", () => { label(); compute(); });
 $("ms").addEventListener("change", () => { const v = parseFloat($("ms").value); if (v > 0) { S.dt = v / 1000; recount(); goto(S.k); } });
 $("modeSize").onclick = () => setMode("size");

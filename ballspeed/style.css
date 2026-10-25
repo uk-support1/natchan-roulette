@@ -20,9 +20,10 @@ details summary{cursor:pointer;color:var(--accent);margin-top:8px}
 .seg button{flex:1;padding:9px 6px;font-size:.9rem}
 .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold}
 .guide{font-size:.9rem;background:var(--bg);border-radius:8px;padding:8px 10px;margin:0 0 10px}
-.stage{position:relative;line-height:0;background:#000;border-radius:10px;overflow:hidden;touch-action:none}
+.scroller{overflow:auto;max-height:75vh;border-radius:10px;background:#000;-webkit-overflow-scrolling:touch}
+.stage{position:relative;line-height:0;width:100%}
 .stage video{width:100%;height:auto;display:block}
-.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:manipulation}
 .frame{font-size:.85rem;color:var(--sub);text-align:center;margin:8px 0 4px;font-variant-numeric:tabular-nums}
 .nav{display:grid;grid-template-columns:1fr 2fr 2fr 1fr;gap:6px}
 .stride{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--sub);margin:10px 0 0}
@@ -33,3 +34,5 @@ details summary{cursor:pointer;color:var(--accent);margin-top:8px}
 .result dt{color:var(--sub)}.result dd{margin:0}
 .result .note{font-size:.82rem;color:var(--sub);margin-top:8px}
 .tips ul{margin:8px 0 0;padding-left:1.2em;font-size:.9rem}
+.result .warnbox{background:#fff3cd;color:#664d03;border-radius:8px;padding:8px 10px;margin-top:10px;font-size:.88rem}
+@media (prefers-color-scheme:dark){.result .warnbox{background:#4a3a0a;color:#ffe69c}}
