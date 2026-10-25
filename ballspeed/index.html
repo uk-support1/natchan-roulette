@@ -35,6 +35,11 @@
         </select>
       </label>
     </div>
+    <label class="calsel">保存した基準を使う
+      <select id="calSel"><option value="">使わない（この動画で測る）</option></select>
+    </label>
+    <p id="calInfo" class="hint"></p>
+    <button id="calDel" class="btn" type="button" hidden>この基準を消す</button>
     <p id="status" class="status" aria-live="polite">まだ動画がありません。</p>
     <details>
       <summary>うまくいかないとき・くわしい設定</summary>
@@ -56,6 +61,12 @@
       </label>
     </div>
     <p class="hint">長さは、ボールの直径（上で選ぶと自動で入ります）か、<b>ボールの通り道と同じ奥行きにある</b>、メジャーで測れるもの（窓の幅など）を入れます。ボールが小さく写るときは、拡大してタップすると正確になります。</p>
+    <div class="row" id="saveRow" hidden>
+      <label>この基準に名前をつけて保存（次の動画から使えます）
+        <input id="calName" type="text" maxlength="20" placeholder="例: リビング 1mテープ">
+      </label>
+      <button id="calSave" class="btn primary" type="button">基準を保存</button>
+    </div>
     <div class="seg" role="tablist">
       <button id="modeSize" class="on" type="button">① ボールの大きさ</button>
       <button id="modeTrack" type="button">② ボールの位置</button>
@@ -95,6 +106,7 @@
       <li>スマホを三脚や台に固定し、ボールの通り道と<b>平行（真横）</b>に置く。</li>
       <li><b>明るい部屋</b>で、無地の背景で。暗いとボールがぶれて見えにくくなります。</li>
       <li>iPhoneの<b>スローモーション（240コマ/秒）</b>で撮ると正確です。</li>
+      <li><b>基準を保存して使い回す</b>と、ボールの大きさに頼らず安定します。スマホとボールの通り道を固定し、通り道の位置に1mのテープなどを置いた動画で、両はしをタップして「基準を保存」。以降は、同じ位置・同じ撮影モードで撮った動画に、保存した基準を選ぶだけです。</li>
       <li>ボールの大きさから長さを決めるので、ボールは通り道と同じ奥行きを通るようにします。</li>
       <li>これは練習の目安です。スピードガンのような正確さはありません。</li>
     </ul>
